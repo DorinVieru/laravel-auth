@@ -32,6 +32,12 @@
                                     <a href="{{ route('admin.projects.show', ['project' => $project->id]) }}" class="btn btn-sm square btn-primary"><i class="fas fa-eye"></i></a>
                                     {{-- EDIT BUTTON --}}
                                     <a href="{{ route('admin.projects.edit', ['project' => $project->id]) }}" class="btn btn-sm square btn-warning mx-2"><i class="fas fa-edit"></i></a>
+                                    {{-- DELETE BUTTON --}}
+                                    <form action="{{ route('admin.projects.destroy', ['project' => $project->id]) }}" method="POST" onsubmit="return confirm('Sei sicuro di voler cancellare {{ $project->title }}?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-sm square btn-danger"><i class="fas fa-trash"></i></button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
