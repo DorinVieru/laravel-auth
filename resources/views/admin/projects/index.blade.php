@@ -33,14 +33,19 @@
                                     {{-- EDIT BUTTON --}}
                                     <a href="{{ route('admin.projects.edit', ['project' => $project->id]) }}" class="btn btn-sm square btn-warning mx-2"><i class="fas fa-edit"></i></a>
                                     {{-- DELETE BUTTON --}}
-                                    <form action="{{ route('admin.projects.destroy', ['project' => $project->id]) }}" method="POST" onsubmit="return confirm('Sei sicuro di voler cancellare {{ $project->title }}?')">
+                                    {{-- <form action="{{ route('admin.projects.destroy', ['project' => $project->id]) }}" method="POST" onsubmit="return confirm('Sei sicuro di voler cancellare {{ $project->title }}?')">
                                         @csrf
                                         @method('DELETE')
                                         <button class="btn btn-sm square btn-danger"><i class="fas fa-trash"></i></button>
-                                    </form>
+                                    </form> --}}
+
+                                    {{-- MODALE --}}
+                                    <button class="btn btn-sm square btn-danger" data-bs-toggle="modal" data-bs-target="#modal_project_delete-{{ $project->id }}"><i class="fas fa-trash"></i></button> 
                                 </div>
                             </td>
                         </tr>
+                        {{-- POP-UP MODALE --}}
+                        @include('admin.projects.modal_delete')
                     @endforeach
                 </tbody>
             </table>
