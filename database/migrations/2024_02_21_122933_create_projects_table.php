@@ -19,7 +19,6 @@ return new class extends Migration
             $table->text('description');
             $table->string('slug');
             $table->string('cover_image')->nullable();
-            $table->tinyInteger('project_number');
             $table->timestamps();
         });
     }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use Illuminate\Support\Str;
 
 class ProjectController extends Controller
 {
@@ -28,7 +29,7 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.projects.create');
     }
 
     /**
@@ -39,7 +40,22 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request)
     {
-        //
+        // CREO LA NUOVA ISTANZA PER COMICS PER SALVARLO NEL DATABASE
+        $project = new Project();
+
+        $form_projects = $request->all();
+
+        // LO SLUG LO RECUPERO IN UN SECONDO MOMENTO, IN QUANTO NON LO PASSO NEL FORM
+        $slug = Str::slug($form_projects['title'], '-');
+        $form_projects['slug'] = $slug;
+        // RECUPERO I DATI TRAMITE IL FILL
+        $project->fill($form_projects);
+
+        // SALVO I DATI
+        $project->save();
+
+        // FACCIO IL REDIRECT ALLA PAGINA SHOW 
+        return redirect()->route('admin.projects.show', ['project' => $project]);
     }
 
     /**
@@ -61,7 +77,7 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        //
+        return view('admin.projects.edit', compact('project'));
     }
 
     /**
@@ -73,7 +89,17 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
-        //
+        $form_projects = $request->all();
+
+        // LO SLUG LO RECUPERO IN UN SECONDO MOMENTO, IN QUANTO NON LO PASSO NEL FORM
+        $slug = Str::slug($form_projects['title'], '-');
+        $form_projects['slug'] = $slug;
+
+        // SALVO I DATI
+        $project->update($form_projects);
+
+        // FACCIO IL REDIRECT ALLA PAGINA SHOW 
+        return redirect()->route('admin.projects.index');
     }
 
     /**
@@ -84,6 +110,6 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        //
+       
     }
 }

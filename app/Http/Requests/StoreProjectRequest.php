@@ -13,7 +13,7 @@ class StoreProjectRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,20 @@ class StoreProjectRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'title' => 'required|max:150|min:2|unique:projects',
+            'description' => 'required|min:5',
+        ];
+    }
+
+    // FUNZIONE CHE RESTITUISCE I MESSAGGI PERSONALIZZATI PER GLI ERRORI
+    public function messages()
+    {
+        return [
+            'title.required' => 'Il titolo è obbligatorio.',
+            'title.max' => 'Il titolo deve contere al massimo 150 caratteri.',
+            'title.min' => 'Il titolo deve contere almeno 2 caratteri.',
+            'description.required' => 'La descrizione è obbligatoria.',
+            'description.min' => 'La descrizione deve contenere almeno 5 caratteri.',
         ];
     }
 }

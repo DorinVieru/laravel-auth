@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Project extends Model
 {
     use HasFactory;
+
+    // INDICO I CAMPI FILLABLE
+    protected $fillable = ['title', 'description', 'cover_image', 'slug'];
 }
