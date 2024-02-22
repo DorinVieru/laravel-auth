@@ -10,12 +10,12 @@
                 </g>
             </svg>
         </div>
-        <h1 class="display-5 fw-bold">
-            Welcome to Laravel+Bootstrap 5
+        <h1 class="display-5 fw-bold fs-2">
+            Benvenuto nella tua Dashboard Portfoglio personalizzata con Laravel!
         </h1>
 
-        <p class="col-md-8 fs-4">This a preset package with Bootstrap 5 views for laravel projects including laravel breeze/blade. It works from laravel 9.x to the latest release 10.x</p>
-        <a href="https://packagist.org/packages/pacificdev/laravel_9_preset" class="btn btn-primary btn-lg" type="button">Documentation</a>
+        <p class="col-md-8 fs-4">Questo è un preset con Bootstrap 5 per progetti Laravel e include laravel/blade. Lavora dalla versione 9x di Laravel fino all'ultima attualmente disponibile, la 10x. Se vuoi avere altre informazioni clicca sul bottone per visionare la documentazione.</p>
+        <a href="https://packagist.org/packages/pacificdev/laravel_9_preset" class="btn btn-primary btn-lg" type="button">Documentazione Laravel 9x</a>
     </div>
 </div>
 
