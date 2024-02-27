@@ -7,6 +7,8 @@ use App\Models\Project;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
@@ -17,7 +19,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::all();
+        $projects = Project::orderByDesc('id')->get();
 
         return view('admin.projects.index', compact('projects'));
     }
@@ -40,14 +42,20 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request)
     {
+        $form_projects = $request->all();
+
         // CREO LA NUOVA ISTANZA PER COMICS PER SALVARLO NEL DATABASE
         $project = new Project();
 
-        $form_projects = $request->all();
+        // VERIFICO SE LA RICHIESTA CONTIENE IL CAMPO cover_image
+        if($request->hasFile('cover_image')) {
+            // Eseguo l'upload del file e recupero il path
+            $path = Storage::disk('public')->put('project_image', $form_projects['cover_image']);
+            $form_projects['cover_image'] = $path;
+        }
 
         // LO SLUG LO RECUPERO IN UN SECONDO MOMENTO, IN QUANTO NON LO PASSO NEL FORM
-        $slug = Str::slug($form_projects['title'], '-');
-        $form_projects['slug'] = $slug;
+        $form_projects['slug'] = Str::slug($form_projects['title'], '-');
         // RECUPERO I DATI TRAMITE IL FILL
         $project->fill($form_projects);
 
@@ -75,9 +83,16 @@ class ProjectController extends Controller
      * @param  \App\Models\Project  $project
      * @return \Illuminate\Http\Response
      */
-    public function edit(Project $project)
+    public function edit(Project $project, Request $request)
     {
-        return view('admin.projects.edit', compact('project'));
+        // Genero una condizione per mostrarmi nell'edit e nel create un messaggio di errore personalizzato per la duplicazione di un titolo
+        $error_message= '';
+        if(!empty($request->all())) {
+            $messages = $request->all();
+            $error_message = $messages['error_message'];
+        }
+
+        return view('admin.projects.edit', compact('project', 'error_message'));
     }
 
     /**
@@ -91,9 +106,28 @@ class ProjectController extends Controller
     {
         $form_projects = $request->all();
 
+        // Creare una query per la modifica di un post con lo stesso titolo
+        $exists = Project::where('title', 'LIKE', $form_projects['title'])->where('id', '!=', $project->id)->get();
+        // Condizione che mi permette di modificare un post mantenendo lo stesso titolo. Ma se cambio titolo e ne inserisco uno già presente in un altro progetto, mi mostra l'errore impostato.
+        if(count($exists) > 0) {
+            $error_message = 'Hai inserito un titolo già presente in un altro progetto.';
+            return redirect()->route('admin.projects.edit', compact('project', 'error_message'));
+        }
+        
+        // VERIFICO SE LA RICHIESTA CONTIENE IL CAMPO cover_image
+        if ($request->hasFile('cover_image')) {
+            // Se il post ha un'immagine
+            if ($project->cover_image != null) {
+                Storage::disk('public')->delete($project->cover_image);
+            }
+
+            // Eseguo l'upload del file e recupero il path
+            $path = Storage::disk('public')->put('project_image', $form_projects['cover_image']);
+            $form_projects['cover_image'] = $path;
+        }
+
         // LO SLUG LO RECUPERO IN UN SECONDO MOMENTO, IN QUANTO NON LO PASSO NEL FORM
-        $slug = Str::slug($form_projects['title'], '-');
-        $form_projects['slug'] = $slug;
+        $form_projects['slug'] = Str::slug($form_projects['title'], '-');
 
         // SALVO I DATI
         $project->update($form_projects);
@@ -110,6 +144,11 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
+        // CANCELLO L'IMMAGINE
+        if($project->cover_image != null){
+            Storage::disk('public')->delete($project->cover_image);
+        }
+        
         $project->delete();
 
         return redirect()->route('admin.projects.index');

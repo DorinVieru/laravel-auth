@@ -24,8 +24,9 @@ class UpdateProjectRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|max:150|min:2|unique:projects',
+            'title' => 'required|max:150|min:2',
             'description' => 'required|min:5',
+            'cover_image' => 'nullable|image|max:1024'
         ];
     }
 
@@ -38,6 +39,8 @@ class UpdateProjectRequest extends FormRequest
             'title.min' => 'Il titolo deve contere almeno 2 caratteri.',
             'description.required' => 'La descrizione è obbligatoria.',
             'description.min' => 'La descrizione deve contenere almeno 5 caratteri.',
+            'cover_image.image' => 'Il file selezionato deve essere una immagine in formato valido (.jph, .jpeg, .webp, .png)',
+            'cover_image.max' => 'Il file selezionato supera le dimensioni massime di 1024 Kb. Riprova.',
         ];
     }
 }

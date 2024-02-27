@@ -7,6 +7,7 @@
             <h1 class="fw-bold">Modifica il progetto {{ $project->id }}</h1>  
         </div>
         <div class="col-10 mt-5">
+            {{-- Condizione per ciclare gli errori da mostrare --}}
              @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul>
@@ -16,7 +17,14 @@
                     </ul>
                 </div>
              @endif
-            <form action="{{ route('admin.projects.update', $project->id) }}" method="POST">
+             {{-- Condizione per l'errore della duplicazione del titolo --}}
+             @if ($error_message != '')
+                <div class="alert alert-danger">
+                    {{ $error_message }}
+                </div> 
+             @endif
+             {{-- FORM --}}
+            <form action="{{ route('admin.projects.update', $project->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -33,7 +41,13 @@
                     @enderror
                 </div>
                 <div class="mb-3">
-                    <input type="text" name="cover_image" class="form-control @error ('cover_image') is-invalid @enderror" id="cover_image" placeholder="Link immagine" value="{{ old('cover_image') ?? $project->cover_image }}">
+                    @if ($project->cover_image != null)
+                        <img class="rounded-3 mb-3" src="{{ asset('/storage/' . $project->cover_image) }}" alt="{{ $project->title }}" width="250">
+                    @else
+                    <h6 class="fw-bold">Immagine di copertina non impostata</h6>
+                    @endif
+
+                    <input type="file" name="cover_image" class="form-control @error ('cover_image') is-invalid @enderror" id="cover_image" placeholder="Immagine di copertina" value="{{ old('cover_image') ?? $project->cover_image }}">
                     @error ('cover_image')
                         <div class="text-danger fw-semibold">{{ $message }}</div>
                     @enderror
